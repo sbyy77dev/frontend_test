@@ -17,10 +17,12 @@ const VerifyOtp = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // 전화번호 정보가 없으면 로그인 페이지로 리다이렉트
-  if (!phone) {
-    navigate('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (!phone) {
+      navigate('/login');
+    }
+  }, [phone, navigate]);
+
 
   const handleVerifyOtp = () => {
     setIsLoading(true);
@@ -33,6 +35,10 @@ const VerifyOtp = () => {
           description: "휴대폰 인증이 완료되었습니다.",
         });
 
+        // --- 로그인 상태 저장 ---
+        localStorage.setItem('userLoggedIn', 'true');
+        // ---------------------
+
         // 신규 / 기존 유저 분기 시뮬레이션
         const isNewUser = true; // DB 조회 결과에 따라 변경
 
@@ -41,7 +47,7 @@ const VerifyOtp = () => {
           navigate('/register', { state: { phone } });
         } else {
           // 기존 유저 -> 메인 대시보드로
-          navigate('/app/chat'); // '/chat' -> '/app/chat'
+          navigate('/app/wallet'); // 시작점을 '월렛'으로 변경
         }
       } else {
         toast({
@@ -53,6 +59,10 @@ const VerifyOtp = () => {
       setIsLoading(false);
     }, 1000);
   };
+
+  if (!phone) {
+    return null; // 리다이렉트 중 렌더링 방지
+  }
 
   return (
     <div className="app-container">

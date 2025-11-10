@@ -18,11 +18,13 @@ const Chat = () => {
       timestamp: new Date()
     }
   ]);
+  // ... (기존 state 로직 동일)
   const [inputValue, setInputValue] = useState('');
   const [isWaitingForAmount, setIsWaitingForAmount] = useState(false);
   const [currentQuery, setCurrentQuery] = useState<Partial<PaymentQuery>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // ... (기존 함수 로직 동일)
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -48,7 +50,7 @@ const Chat = () => {
     addMessage(inputValue, 'user');
     
     if (isWaitingForAmount) {
-      // ... (기존 로직 동일)
+      // 금액 입력 처리
       const amount = parseInt(inputValue.replace(/[^0-9]/g, ''));
       if (amount > 0) {
         const query: PaymentQuery = {
@@ -57,6 +59,7 @@ const Chat = () => {
           category: currentQuery.category
         };
         
+        // 카드 추천 실행
         const recommendations = getCardRecommendations(query, sampleCards);
         
         setTimeout(() => {
@@ -75,7 +78,7 @@ const Chat = () => {
         }, 500);
       }
     } else {
-      // ... (기존 로직 동일)
+      // 가맹점명 입력 처리
       const merchant = inputValue;
       const category = inferCategoryFromMerchant(merchant);
       
@@ -111,9 +114,8 @@ const Chat = () => {
   return (
     // app-container 클래스 제거 (MainLayout이 담당)
     <div className="flex flex-col h-full"> 
-      {/* Header */}
-      <div className="flex items-center p-4 border-b bg-background">
-        {/* 뒤로가기 버튼 제거 (탭바에 의해 불필요) */}
+      {/* Header (배경색 제거) */}
+      <div className="flex items-center p-4 border-b">
         <h1 className="text-lg font-semibold flex-1 text-center">카드 추천 챗봇</h1>
       </div>
 
@@ -124,6 +126,7 @@ const Chat = () => {
             <div className={message.type === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'}>
               <p className="text-sm">{message.content}</p>
               
+              {/* 카드 추천 결과 표시 */}
               {message.data?.recommendations && (
                 <div className="mt-3 space-y-2">
                   {message.data.recommendations.map((rec: any, index: number) => (
@@ -133,7 +136,6 @@ const Chat = () => {
                       onClick={() => handleCardRecommendationClick(rec.card.id)}
                     >
                       <CardContent className="p-3">
-                        {/* ... (기존 UI 동일) ... */}
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                             <CreditCard className="w-5 h-5 text-primary" />
@@ -141,7 +143,7 @@ const Chat = () => {
                           <div className="flex-1">
                             <h4 className="font-medium text-sm">{rec.card.name}</h4>
                             <p className="text-xs text-muted-foreground">{rec.reason}</p>
-                            <p className="text-xs text-green-600 font-medium">
+                            <p className="text-xs font-medium" style={{color: "hsl(var(--success))"}}>
                               예상 혜택: {rec.expectedBenefit.toLocaleString()}원
                             </p>
                           </div>
@@ -155,9 +157,9 @@ const Chat = () => {
           </div>
         ))}
         
+        {/* Quick Actions */}
         {messages.length === 1 && (
           <div className="space-y-3">
-            {/* ... (기존 UI 동일) ... */}
             <p className="text-sm text-muted-foreground text-center">빠른 메뉴</p>
             <div className="grid grid-cols-1 gap-2">
               <Button 
@@ -202,8 +204,8 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t bg-background">
+      {/* Input (배경색 bg-background -> bg-card 또는 bg-white로 변경) */}
+      <div className="p-4 border-t bg-card">
         <div className="flex space-x-2">
           <Input
             value={inputValue}

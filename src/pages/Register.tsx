@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,6 @@ const Register = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // VerifyOtp 페이지에서 넘겨받은 전화번호
   const phone = location.state?.phone;
 
   const [name, setName] = useState('');
@@ -23,10 +22,12 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // 전화번호 정보가 없으면 로그인 페이지로 리다이렉트
-  if (!phone) {
-    navigate('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (!phone) {
+      navigate('/login');
+    }
+  }, [phone, navigate]);
+
 
   const handleAgreeAll = (checked: boolean) => {
     setAgreeAll(checked);
@@ -68,6 +69,10 @@ const Register = () => {
       navigate('/link-mydata');
     }, 1000);
   };
+
+  if (!phone) {
+    return null; // 리다이렉트 중 렌더링 방지
+  }
 
   return (
     <div className="app-container">
@@ -116,7 +121,7 @@ const Register = () => {
                     checked={agreeAll} 
                     onCheckedChange={(checked) => handleAgreeAll(checked as boolean)}
                   />
-                  <Label htmlFor="agreeAll" className="font-semibold">전체 동의</Label>
+                  <Label htmlFor="agreeAll" className="font-semibold cursor-pointer">전체 동의</Label>
                 </div>
                 <div className="pl-4 space-y-3">
                   <div className="flex items-center justify-between">
@@ -126,7 +131,7 @@ const Register = () => {
                         checked={agreeTerms} 
                         onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
                       />
-                      <Label htmlFor="agreeTerms">이용약관 동의 (필수)</Label>
+                      <Label htmlFor="agreeTerms" className="cursor-pointer">이용약관 동의 (필수)</Label>
                     </div>
                     <Link to="#" className="text-xs text-muted-foreground underline">보기</Link>
                   </div>
@@ -137,7 +142,7 @@ const Register = () => {
                         checked={agreePrivacy} 
                         onCheckedChange={(checked) => setAgreePrivacy(checked as boolean)}
                       />
-                      <Label htmlFor="agreePrivacy">개인정보 처리방침 동의 (필수)</Label>
+                      <Label htmlFor="agreePrivacy" className="cursor-pointer">개인정보 처리방침 동의 (필수)</Label>
                     </div>
                     <Link to="#" className="text-xs text-muted-foreground underline">보기</Link>
                   </div>
@@ -147,7 +152,7 @@ const Register = () => {
               <Button 
                 type="submit" 
                 className="w-full btn-gradient h-11"
-                disabled={isLoading}
+                disabled={isLoading || !agreeTerms || !agreePrivacy}
               >
                 {isLoading ? "가입 중..." : "다음"}
               </Button>

@@ -20,8 +20,9 @@ const Wallet = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
+    // h-full과 app-container 클래스 제거 (MainLayout이 담당)
+    <div className="flex flex-col">
+      {/* Header (배경색 제거) */}
       <div className="flex items-center p-4 border-b">
         <h1 className="text-lg font-semibold flex-1 text-center">월렛</h1>
       </div>
@@ -36,7 +37,8 @@ const Wallet = () => {
             {MockRegisteredCards.map((userCard, index) => (
               <div 
                 key={index} 
-                className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg"
+                className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg cursor-pointer hover:bg-muted"
+                onClick={() => navigate(`/app/card/${userCard.card.id}`)} // 상세 페이지로 이동
               >
                 <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                   <CreditCard className="w-5 h-5 text-primary" />
@@ -57,7 +59,7 @@ const Wallet = () => {
           </CardContent>
         </Card>
 
-        {/* 카드 추가 버튼 (삼성페이 스타일) */}
+        {/* 카드 추가 버튼 (위치 조정 및 새 스타일 적용) */}
         <Link to="/app/wallet/add" className="absolute bottom-24 right-6">
           <Button size="icon" className="rounded-full w-14 h-14 btn-gradient shadow-elevated">
             <Plus className="w-6 h-6" />
