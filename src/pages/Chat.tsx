@@ -48,7 +48,7 @@ const Chat = () => {
     addMessage(inputValue, 'user');
     
     if (isWaitingForAmount) {
-      // 금액 입력 처리
+      // ... (기존 로직 동일)
       const amount = parseInt(inputValue.replace(/[^0-9]/g, ''));
       if (amount > 0) {
         const query: PaymentQuery = {
@@ -57,7 +57,6 @@ const Chat = () => {
           category: currentQuery.category
         };
         
-        // 카드 추천 실행
         const recommendations = getCardRecommendations(query, sampleCards);
         
         setTimeout(() => {
@@ -76,7 +75,7 @@ const Chat = () => {
         }, 500);
       }
     } else {
-      // 가맹점명 입력 처리
+      // ... (기존 로직 동일)
       const merchant = inputValue;
       const category = inferCategoryFromMerchant(merchant);
       
@@ -94,10 +93,10 @@ const Chat = () => {
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'spending':
-        navigate('/spending-pattern');
+        navigate('/app/spending'); // 경로 수정
         break;
       case 'performance':
-        navigate('/card-performance');
+        navigate('/app/performance'); // 경로 수정
         break;
       case 'recommend':
         addMessage('어떤 가맹점에서 결제하실 예정인가요?', 'bot');
@@ -106,22 +105,16 @@ const Chat = () => {
   };
 
   const handleCardRecommendationClick = (cardId: string) => {
-    navigate(`/card/${cardId}`);
+    navigate(`/app/card/${cardId}`); // 경로 수정
   };
 
   return (
-    <div className="app-container flex flex-col h-screen">
+    // app-container 클래스 제거 (MainLayout이 담당)
+    <div className="flex flex-col h-full"> 
       {/* Header */}
       <div className="flex items-center p-4 border-b bg-background">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => navigate('/')}
-          className="mr-3"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-lg font-semibold">카드 추천 챗봇</h1>
+        {/* 뒤로가기 버튼 제거 (탭바에 의해 불필요) */}
+        <h1 className="text-lg font-semibold flex-1 text-center">카드 추천 챗봇</h1>
       </div>
 
       {/* Messages */}
@@ -131,7 +124,6 @@ const Chat = () => {
             <div className={message.type === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'}>
               <p className="text-sm">{message.content}</p>
               
-              {/* 카드 추천 결과 표시 */}
               {message.data?.recommendations && (
                 <div className="mt-3 space-y-2">
                   {message.data.recommendations.map((rec: any, index: number) => (
@@ -141,6 +133,7 @@ const Chat = () => {
                       onClick={() => handleCardRecommendationClick(rec.card.id)}
                     >
                       <CardContent className="p-3">
+                        {/* ... (기존 UI 동일) ... */}
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                             <CreditCard className="w-5 h-5 text-primary" />
@@ -162,9 +155,9 @@ const Chat = () => {
           </div>
         ))}
         
-        {/* Quick Actions */}
         {messages.length === 1 && (
           <div className="space-y-3">
+            {/* ... (기존 UI 동일) ... */}
             <p className="text-sm text-muted-foreground text-center">빠른 메뉴</p>
             <div className="grid grid-cols-1 gap-2">
               <Button 

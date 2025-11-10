@@ -26,7 +26,7 @@ const Recommendations = () => {
     group: userGroup.spendingPattern.categories[category as keyof typeof userGroup.spendingPattern.categories] || 1
   }));
   const handleCardClick = (cardId: string) => {
-    navigate(`/card/${cardId}`);
+    navigate(`/app/card/${cardId}`); // 경로 수정
   };
   return <div className="app-container">
       {/* Header */}
