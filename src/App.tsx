@@ -14,13 +14,14 @@ import LinkMyData from "./pages/LinkMyData";
 import RegisterCards from "./pages/RegisterCards";
 import Wallet from "./pages/Wallet";
 import Chat from "./pages/Chat";
-import SpendingPattern from "./pages/SpendingPattern";
+// import SpendingPattern from "./pages/SpendingPattern";
 import CardPerformance from "./pages/CardPerformance";
 import Survey from "./pages/Survey";
 import Recommendations from "./pages/Recommendations";
 import CardDetail from "./pages/CardDetail";
 import NotFound from "./pages/NotFound";
-import VerifyCard from "./pages/VerifyCard"; // 1. VerifyCard 페이지 임포트
+import VerifyCard from "./pages/VerifyCard"; 
+import SpendingDetail from "./pages/SpendingDetail"; // 1. SpendingDetail 페이지 임포트
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,7 @@ const App = () => (
       <Sonner />
       <HashRouter>
         <Routes>
-          {/* ... (기존 Splash, Login 등 라우트) ... */}
+          {/* ... (Splash, Login 등 기존 인증 라우트) ... */}
           <Route path="/" element={<Splash />} />
           <Route path="/login" element={<Login />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
@@ -46,8 +47,12 @@ const App = () => (
             <Route path="chat" element={<Chat />} />
             <Route path="wallet" element={<Wallet />} />
             <Route path="wallet/add" element={<RegisterCards />} />
-            <Route path="wallet/verify" element={<VerifyCard />} /> {/* 2. 새 라우트 추가 */}
-            <Route path="spending" element={<SpendingPattern />} />
+            <Route path="wallet/verify" element={<VerifyCard />} />
+            
+            {/* [수정됨] '분석' 탭 라우팅 */}
+            <Route path="spending" element={<SpendingPattern />} /> {/* 2. 이 페이지는 이제 메뉴입니다. */}
+            <Route path="spending/detail" element={<SpendingDetail />} /> {/* 3. 상세 페이지(차트) 라우트 추가 */}
+
             <Route path="performance" element={<CardPerformance />} />
             <Route path="card/:cardId" element={<CardDetail />} />
           </Route>
