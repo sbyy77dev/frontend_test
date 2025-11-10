@@ -23,20 +23,21 @@ import {
 import { cn } from '@/lib/utils';
 import { sampleCards } from '@/data/mockData';
 
-// 목업 데이터 수정 (실제 카드만)
+// 1. 목업 데이터 수정 (실제 카드만)
 const mockCards = [
   { ...sampleCards[0], cardImage: '/images/13card.png' },
   { ...sampleCards[1], cardImage: '/images/51card.png' },
+  { ...sampleCards[2], cardImage: '/images/2885card.png' }, // 기존 이미지 재활용
 ];
 
-// '카드 추가'용 더미 객체 생성
+// 2. '카드 추가'용 더미 객체 생성
 const addCardSlot = {
   id: 'add',
   name: '카드 추가',
   cardImage: '',
 };
 
-// 캐러셀에 표시할 실제 목록 (기존 카드 + '추가' 슬롯)
+// 3. 캐러셀에 표시할 실제 목록 (기존 카드 + '추가' 슬롯)
 const carouselItems = [...mockCards, addCardSlot];
 
 const Wallet = () => {
@@ -62,12 +63,12 @@ const Wallet = () => {
     setTimeout(() => {
       setPaymentStatus('activated'); 
       setTimeout(() => {
-        setIsModalOpen(false); // 결제 완료 후 1.5초 뒤 팝업 닫기
+        setIsModalOpen(false);
+        setPaymentStatus('idle'); 
       }, 1500);
     }, 2000);
   };
 
-  // 모달이 닫힐 때(취소 또는 외부 클릭) 상태 초기화
   const onModalOpenChange = (open: boolean) => {
     if (!open) {
       setPaymentStatus('idle');
@@ -75,7 +76,7 @@ const Wallet = () => {
     setIsModalOpen(open);
   }
 
-  // 현재 활성화된 아이템 정보 가져오기
+  // 4. 현재 활성화된 아이템 정보 가져오기
   const getActiveItem = () => carouselItems[activeIndex] || carouselItems[0];
   const isAddCardActive = getActiveItem().id === 'add';
 
@@ -93,15 +94,16 @@ const Wallet = () => {
           setApi={setApi} 
           className="w-full max-w-xs" 
           opts={{
-            loop: false, // '카드 추가' 슬롯이 마지막에 고정되도록 loop 비활성화
+            loop: false, // 5. '카드 추가' 슬롯이 마지막에 고정되도록 loop 비활성화
             align: "start",
           }}
         >
           <CarouselContent>
+            {/* 6. 'carouselItems' 배열로 맵핑 */}
             {carouselItems.map((card) => (
               <CarouselItem key={card.id}>
                 {card.id === 'add' ? (
-                  // '카드 추가' 슬롯 렌더링
+                  // 7. '카드 추가' 슬롯 렌더링
                   <Link to="/app/wallet/add">
                     <Card 
                       className="shadow-none border-2 border-dashed border-muted-foreground/30 bg-transparent flex items-center justify-center"
@@ -116,7 +118,7 @@ const Wallet = () => {
                     </Card>
                   </Link>
                 ) : (
-                  // 일반 카드 렌더링 (눕혀진 카드)
+                  // 8. 일반 카드 렌더링 (기존 눕혀진 카드)
                   <Card 
                     className="shadow-elevated overflow-hidden rounded-lg bg-white flex items-center justify-center"
                     style={{
@@ -148,7 +150,7 @@ const Wallet = () => {
           ))}
         </div>
 
-        {/* '카드 추가' 슬롯이 활성화되면 '결제하기' 버튼 숨기기 */}
+        {/* 9. '카드 추가' 슬롯이 활성화되면 '결제하기' 버튼 숨기기 */}
         {!isAddCardActive && (
           <AlertDialog open={isModalOpen} onOpenChange={onModalOpenChange}>
             <AlertDialogTrigger asChild>
@@ -158,6 +160,7 @@ const Wallet = () => {
             </AlertDialogTrigger>
             
             <AlertDialogContent className="max-w-[300px]">
+              {/* ... (결제 모달 로직은 동일) ... */}
               {paymentStatus === 'idle' && (
                 <>
                   <AlertDialogHeader>
@@ -168,19 +171,12 @@ const Wallet = () => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>취소</AlertDialogCancel>
-                    
-                    {/* --- [수정됨] --- */}
-                    {/* <AlertDialogAction>은 클릭 시 팝업을 닫아버리므로,
-                        일반 <Button>으로 교체해야 상태가 유지됩니다. */}
-                    <Button onClick={handlePayment} className="btn-gradient">
+                    <AlertDialogAction onClick={handlePayment} className="btn-gradient">
                       결제
-                    </Button>
-                    {/* --- [수정 완료] --- */}
-                    
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </>
               )}
-              
               {(paymentStatus === 'activating' || paymentStatus === 'activated') && (
                 <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 perspective-1000">
                   <div 
@@ -215,7 +211,7 @@ const Wallet = () => {
           </AlertDialog>
         )}
         
-        {/* '카드 추가' 슬롯이 활성화되면 '카드 등록' 버튼을 대신 표시 */}
+        {/* 10. '카드 추가' 슬롯이 활성화되면 '카드 등록' 버튼을 대신 표시 (UX 향상) */}
         {isAddCardActive && (
             <Button 
             className="w-full max-w-xs mx-auto btn-gradient h-12 text-lg font-medium shadow-lg"
@@ -225,6 +221,9 @@ const Wallet = () => {
           </Button>
         )}
       </div>
+
+      {/* 11. 기존의 떠다니는 + 버튼 제거됨 */}
+      
     </div>
   );
 };

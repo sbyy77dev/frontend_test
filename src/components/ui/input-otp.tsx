@@ -1,14 +1,14 @@
 "use client"
 
 import * as React from "react"
-// 1. 'useSlot'을 제거하고, 'OTPInputContext'만 올바르게 임포트합니다.
-import { OTPInput, OTPInputContext } from "input-otp"
-import { Dot } from "lucide-react"
+// 1. OTPInputContext를 올바르게 임포트합니다.
+import { OTPInput, OTPInputContext, useSlot } from "input-otp"
+import { Dot } from "lucide-react" // 2. 마스킹을 위한 Dot 아이콘 임포트
 
 import { cn } from "@/lib/utils"
 
 const InputOTP = React.forwardRef<
-  React.ElementRef<typeof OTPInput>,
+  HTMLInputElement,
   React.ComponentPropsWithoutRef<typeof OTPInput>
 >(({ className, containerClassName, ...props }, ref) => (
   <OTPInput
@@ -23,10 +23,10 @@ const InputOTP = React.forwardRef<
 ))
 InputOTP.displayName = "InputOTP"
 
-// 2. 오류를 유발했던 Context 재정의 라인을 삭제합니다. (중요)
+// 3. 버그의 원인이었던 Context 재정의 라인을 삭제했습니다.
 
 const InputOTPGroup = React.forwardRef<
-  React.ElementRef<"div">,
+  HTMLDivElement,
   React.ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("flex items-center", className)} {...props} />
@@ -34,14 +34,17 @@ const InputOTPGroup = React.forwardRef<
 InputOTPGroup.displayName = "InputOTPGroup"
 
 const InputOTPSlot = React.forwardRef<
-  React.ElementRef<"div">,
+  HTMLDivElement,
   React.ComponentPropsWithoutRef<"div"> & { index: number }
 >(({ index, className, ...props }, ref) => {
-  // 3. 올바른 Context를 사용합니다.
+  // 4. 올바르게 임포트된 OTPInputContext를 사용합니다.
   const inputOTPContext = React.useContext(OTPInputContext)
-  
-  // 4. 'useSlot' 대신 Context의 'slots' 배열을 직접 사용합니다. (원래 방식)
-  const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index]
+  const { char, hasFakeCaret, isActive } = useSlot(index)
+
+  // 5. 오류 방지를 위해 Context가 있는지 확인합니다.
+  if (!inputOTPContext) {
+    throw new Error("InputOTPSlot must be used within an InputOTP")
+  }
 
   return (
     <div
@@ -53,7 +56,7 @@ const InputOTPSlot = React.forwardRef<
       )}
       {...props}
     >
-      {/* 5. 마스킹 로직을 'slots' 데이터로 구현합니다. */}
+      {/* 6. 마스킹 로직을 여기에 직접 구현합니다. */}
       {char ? (
         // 문자가 있고, 활성화(포커스) 상태가 아니면 Dot(•)을 보여줍니다.
         <div>{isActive ? char : <Dot className="h-4 w-4" />}</div>
@@ -73,7 +76,7 @@ const InputOTPSlot = React.forwardRef<
 InputOTPSlot.displayName = "InputOTPSlot"
 
 const InputOTPSeparator = React.forwardRef<
-  React.ElementRef<"div">,
+  HTMLDivElement,
   React.ComponentPropsWithoutRef<"div">
 >(({ ...props }, ref) => (
   <div ref={ref} role="separator" {...props}>
