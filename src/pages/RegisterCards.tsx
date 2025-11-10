@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"; 
 import { ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,7 +17,7 @@ const RegisterCards = () => {
   const [cvc, setCvc] = useState('');
   const [password, setPassword] = useState('');
 
-  // 입력값 서식 자동 적용
+  // 입력값 서식 자동 적용 (카드 번호)
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ''); // 숫자만
     let formattedValue = '';
@@ -28,6 +28,7 @@ const RegisterCards = () => {
     setCardNumber(formattedValue.substring(0, 19)); // 0000 0000 0000 0000
   };
 
+  // 입력값 서식 자동 적용 (유효기간)
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ''); // 숫자만
     let formattedValue = value;
@@ -113,8 +114,8 @@ const RegisterCards = () => {
                   <Label htmlFor="cvc">CVC</Label>
                   <Input
                     id="cvc"
-                    type="password" // 마스킹 처리
-                    placeholder="123"
+                    type="password"
+                    placeholder="●●●"
                     value={cvc}
                     onChange={(e) => setCvc(e.target.value.replace(/\D/g, ''))}
                     maxLength={3}
@@ -122,7 +123,7 @@ const RegisterCards = () => {
                 </div>
               </div>
 
-              {/* 카드 비밀번호 */}
+              {/* [수정됨] 카드 비밀번호 (앞 2자리) */}
               <div className="space-y-2">
                 <Label htmlFor="password">카드 비밀번호 (앞 2자리)</Label>
                 <div className="flex justify-center">
@@ -130,14 +131,13 @@ const RegisterCards = () => {
                     maxLength={2} 
                     value={password} 
                     onChange={(value) => setPassword(value)}
-                    render={({ slots }) => (
-                      <InputOTPGroup>
-                        {slots.map((slot, index) => (
-                          <InputOTPSlot key={index} {...slot} />
-                        ))}
-                      </InputOTPGroup>
-                    )}
-                  />
+                    // password={true} 속성 제거 (컴포넌트가 알아서 마스킹)
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                    </InputOTPGroup>
+                  </InputOTP>
                 </div>
               </div>
 
