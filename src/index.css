@@ -178,4 +178,15 @@
     /* 새 success 변수 사용 */
     @apply bg-success text-white hover:bg-success/90;
   }
+  
+  /* --- 3D 카드를 위한 유틸리티 클래스 추가 --- */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
 }
