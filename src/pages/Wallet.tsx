@@ -23,12 +23,22 @@ import {
 import { cn } from '@/lib/utils';
 import { sampleCards } from '@/data/mockData';
 
-// public/images/에 저장한 새 이미지로 목업 데이터 생성
+// 1. 목업 데이터 수정 (실제 카드만)
 const mockCards = [
   { ...sampleCards[0], cardImage: '/images/13card.png' },
   { ...sampleCards[1], cardImage: '/images/51card.png' },
   { ...sampleCards[2], cardImage: '/images/2885card.png' }, // 기존 이미지 재활용
 ];
+
+// 2. '카드 추가'용 더미 객체 생성
+const addCardSlot = {
+  id: 'add',
+  name: '카드 추가',
+  cardImage: '',
+};
+
+// 3. 캐러셀에 표시할 실제 목록 (기존 카드 + '추가' 슬롯)
+const carouselItems = [...mockCards, addCardSlot];
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -48,11 +58,10 @@ const Wallet = () => {
   }, [api]);
 
   const handlePayment = () => {
+    // 결제 로직 (동일)
     setPaymentStatus('activating'); 
-    
     setTimeout(() => {
       setPaymentStatus('activated'); 
-      
       setTimeout(() => {
         setIsModalOpen(false);
         setPaymentStatus('idle'); 
@@ -67,7 +76,9 @@ const Wallet = () => {
     setIsModalOpen(open);
   }
 
-  const getCardToShow = () => mockCards[activeIndex] || mockCards[0];
+  // 4. 현재 활성화된 아이템 정보 가져오기
+  const getActiveItem = () => carouselItems[activeIndex] || carouselItems[0];
+  const isAddCardActive = getActiveItem().id === 'add';
 
   return (
     <div className="flex flex-col h-full">
@@ -83,30 +94,44 @@ const Wallet = () => {
           setApi={setApi} 
           className="w-full max-w-xs" 
           opts={{
-            loop: true,
+            loop: false, // 5. '카드 추가' 슬롯이 마지막에 고정되도록 loop 비활성화
+            align: "start",
           }}
         >
           <CarouselContent>
-            {mockCards.map((card) => (
+            {/* 6. 'carouselItems' 배열로 맵핑 */}
+            {carouselItems.map((card) => (
               <CarouselItem key={card.id}>
-                {/* [수정됨]
-                  1. Card의 aspect-ratio를 가로(85.6 / 53.98)로 변경.
-                  2. <img>에 -rotate-90 (시계 반대방향 90도) 및 object-contain 추가.
-                  3. <img> 스케일을 살짝 조정해 가로 프레임에 맞춤.
-                  4. Card에 flex, items-center, justify-center 추가.
-                */}
-                <Card 
-                  className="shadow-elevated overflow-hidden rounded-lg bg-white flex items-center justify-center"
-                  style={{
-                    aspectRatio: '85.6 / 53.98' // 가로 카드 비율
-                  }}
-                >
-                  <img 
-                    src={card.cardImage} 
-                    alt={card.name} 
-                    className="w-full h-full object-contain -rotate-90 scale-[1.15]" // 90도 회전, 잘림 방지
-                  />
-                </Card>
+                {card.id === 'add' ? (
+                  // 7. '카드 추가' 슬롯 렌더링
+                  <Link to="/app/wallet/add">
+                    <Card 
+                      className="shadow-none border-2 border-dashed border-muted-foreground/30 bg-transparent flex items-center justify-center"
+                      style={{
+                        aspectRatio: '85.6 / 53.98' // 가로 카드 비율
+                      }}
+                    >
+                      <div className="flex flex-col items-center text-muted-foreground/70">
+                        <Plus className="w-10 h-10" />
+                        <span className="text-sm font-medium">카드 추가</span>
+                      </div>
+                    </Card>
+                  </Link>
+                ) : (
+                  // 8. 일반 카드 렌더링 (기존 눕혀진 카드)
+                  <Card 
+                    className="shadow-elevated overflow-hidden rounded-lg bg-white flex items-center justify-center"
+                    style={{
+                      aspectRatio: '85.6 / 53.98' // 가로 카드 비율
+                    }}
+                  >
+                    <img 
+                      src={card.cardImage} 
+                      alt={card.name} 
+                      className="w-full h-full object-contain -rotate-90 scale-[1.15]"
+                    />
+                  </Card>
+                )}
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -114,7 +139,7 @@ const Wallet = () => {
 
         {/* 캐러셀 인디케이터 (점) */}
         <div className="flex justify-center gap-2">
-          {mockCards.map((_, index) => (
+          {carouselItems.map((_, index) => (
             <div
               key={index}
               className={cn(
@@ -125,79 +150,80 @@ const Wallet = () => {
           ))}
         </div>
 
-        {/* 결제하기 버튼 (AlertDialog 트리거) */}
-        <AlertDialog open={isModalOpen} onOpenChange={onModalOpenChange}>
-          <AlertDialogTrigger asChild>
-            <Button className="w-full max-w-xs mx-auto btn-gradient h-12 text-lg font-medium shadow-lg">
-              결제하기
-            </Button>
-          </AlertDialogTrigger>
-          
-          {/* --- 결제 모달 (이 부분은 수정 없음) --- */}
-          {/* 결제 시에는 카드가 다시 세로로 서서 애니메이션됩니다. */}
-          <AlertDialogContent className="max-w-[300px]">
-            {paymentStatus === 'idle' && (
-              <>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>결제하시겠습니까?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {getCardToShow().name}(으)로 1,000원(테스트)을 결제합니다.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>취소</AlertDialogCancel>
-                  <AlertDialogAction onClick={handlePayment} className="btn-gradient">
-                    결제
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </>
-            )}
+        {/* 9. '카드 추가' 슬롯이 활성화되면 '결제하기' 버튼 숨기기 */}
+        {!isAddCardActive && (
+          <AlertDialog open={isModalOpen} onOpenChange={onModalOpenChange}>
+            <AlertDialogTrigger asChild>
+              <Button className="w-full max-w-xs mx-auto btn-gradient h-12 text-lg font-medium shadow-lg">
+                결제하기
+              </Button>
+            </AlertDialogTrigger>
             
-            {(paymentStatus === 'activating' || paymentStatus === 'activated') && (
-              <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 perspective-1000">
-                
-                {/* "세로로 서는" 카드 애니메이션 */}
-                <div 
-                  className={cn(
-                    "relative w-48 rounded-lg overflow-hidden shadow-elevated transform-style-3d",
-                    "animate-card-stand-up", 
-                    paymentStatus === 'activated' && "animate-card-activated"
+            <AlertDialogContent className="max-w-[300px]">
+              {/* ... (결제 모달 로직은 동일) ... */}
+              {paymentStatus === 'idle' && (
+                <>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>결제하시겠습니까?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {getActiveItem().name}(으)로 1,000원(테스트)을 결제합니다.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>취소</AlertDialogCancel>
+                    <AlertDialogAction onClick={handlePayment} className="btn-gradient">
+                      결제
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </>
+              )}
+              {(paymentStatus === 'activating' || paymentStatus === 'activated') && (
+                <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 perspective-1000">
+                  <div 
+                    className={cn(
+                      "relative w-48 rounded-lg overflow-hidden shadow-elevated transform-style-3d",
+                      "animate-card-stand-up", 
+                      paymentStatus === 'activated' && "animate-card-activated"
+                    )}
+                    style={{ aspectRatio: '53.98 / 85.6' }}
+                  >
+                    <img
+                      src={getActiveItem().cardImage}
+                      alt={getActiveItem().name}
+                      className="w-full h-full object-cover backface-hidden"
+                    />
+                  </div>
+                  {paymentStatus === 'activating' && (
+                    <div className="flex items-center space-x-2 text-muted-foreground pt-4">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>결제 중...</span>
+                    </div>
                   )}
-                  style={{
-                    aspectRatio: '53.98 / 85.6' // 세로 카드 비율
-                  }}
-                >
-                  <img
-                    src={getCardToShow().cardImage}
-                    alt={getCardToShow().name}
-                    className="w-full h-full object-cover backface-hidden"
-                  />
+                  {paymentStatus === 'activated' && (
+                    <div className="flex items-center space-x-2 text-success font-semibold pt-4">
+                      <CheckCircle className="w-5 h-5" />
+                      <span>결제 완료!</span>
+                    </div>
+                  )}
                 </div>
-                
-                {paymentStatus === 'activating' && (
-                  <div className="flex items-center space-x-2 text-muted-foreground pt-4">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>결제 중...</span>
-                  </div>
-                )}
-                {paymentStatus === 'activated' && (
-                  <div className="flex items-center space-x-2 text-success font-semibold pt-4">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>결제 완료!</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </AlertDialogContent>
-        </AlertDialog>
+              )}
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+        
+        {/* 10. '카드 추가' 슬롯이 활성화되면 '카드 등록' 버튼을 대신 표시 (UX 향상) */}
+        {isAddCardActive && (
+            <Button 
+            className="w-full max-w-xs mx-auto btn-gradient h-12 text-lg font-medium shadow-lg"
+            onClick={() => navigate('/app/wallet/add')}
+          >
+            카드 등록하기
+          </Button>
+        )}
       </div>
 
-      {/* 카드 추가 버튼 (+) */}
-      <Link to="/app/wallet/add" className="absolute bottom-24 right-6 z-10">
-        <Button size="icon" className="rounded-full w-14 h-14 btn-gradient shadow-elevated">
-          <Plus className="w-6 h-6" />
-        </Button>
-      </Link>
+      {/* 11. 기존의 떠다니는 + 버튼 제거됨 */}
+      
     </div>
   );
 };

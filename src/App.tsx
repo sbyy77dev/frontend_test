@@ -6,8 +6,7 @@ import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // 레이아웃 및 페이지 임포트
 import MainLayout from "./components/MainLayout";
-// import Index from "./pages/Index"; // 1. 기존 Index 주석 처리
-import Splash from "./pages/Splash"; // 2. 새 스플래시 페이지 임포트
+import Splash from "./pages/Splash";
 import Login from "./pages/Login";
 import VerifyOtp from "./pages/VerifyOtp";
 import Register from "./pages/Register";
@@ -21,6 +20,7 @@ import Survey from "./pages/Survey";
 import Recommendations from "./pages/Recommendations";
 import CardDetail from "./pages/CardDetail";
 import NotFound from "./pages/NotFound";
+import VerifyCard from "./pages/VerifyCard"; // 1. VerifyCard 페이지 임포트
 
 const queryClient = new QueryClient();
 
@@ -31,12 +31,8 @@ const App = () => (
       <Sonner />
       <HashRouter>
         <Routes>
-          {/* 3. 요청에 따라 기존 / 경로는 Splash 스크린으로 대체합니다.
-          */}
+          {/* ... (기존 Splash, Login 등 라우트) ... */}
           <Route path="/" element={<Splash />} />
-          {/* <Route path="/home" element={<Index />} /> */} {/* 4. 기존 Index 페이지, 필요시 /home 등으로 사용 */}
-          
-          {/* 인증 및 온보딩 플로우 (탭바 없음) */}
           <Route path="/login" element={<Login />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/register" element={<Register />} />
@@ -46,10 +42,11 @@ const App = () => (
 
           {/* 메인 앱 플로우 (하단 탭바 레이아웃 적용) */}
           <Route path="/app" element={<MainLayout />}>
-            <Route index element={<Navigate to="wallet" replace />} /> {/* 5. 시작 탭을 '월렛'으로 변경 */}
+            <Route index element={<Navigate to="wallet" replace />} />
             <Route path="chat" element={<Chat />} />
             <Route path="wallet" element={<Wallet />} />
             <Route path="wallet/add" element={<RegisterCards />} />
+            <Route path="wallet/verify" element={<VerifyCard />} /> {/* 2. 새 라우트 추가 */}
             <Route path="spending" element={<SpendingPattern />} />
             <Route path="performance" element={<CardPerformance />} />
             <Route path="card/:cardId" element={<CardDetail />} />
