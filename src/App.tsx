@@ -14,15 +14,18 @@ import LinkMyData from "./pages/LinkMyData";
 import RegisterCards from "./pages/RegisterCards";
 import Wallet from "./pages/Wallet";
 import Chat from "./pages/Chat";
-// import SpendingPattern from "./pages/SpendingPattern";
+
+// --- [수정됨] ---
+import Analysis from "./pages/Analysis"; // 1. SpendingPattern -> Analysis
+import SpendingDetail from "./pages/SpendingDetail"; // 2. SpendingPattern_ori -> SpendingDetail
+// --- [수정 완료] ---
+
 import CardPerformance from "./pages/CardPerformance";
 import Survey from "./pages/Survey";
 import Recommendations from "./pages/Recommendations";
 import CardDetail from "./pages/CardDetail";
 import NotFound from "./pages/NotFound";
 import VerifyCard from "./pages/VerifyCard"; 
-import SpendingPattern from "./pages/SpendingPattern";
-import SpendingDetail from "./pages/SpendingDetail"; // 1. SpendingDetail 페이지 임포트
 
 const queryClient = new QueryClient();
 
@@ -50,11 +53,12 @@ const App = () => (
             <Route path="wallet/add" element={<RegisterCards />} />
             <Route path="wallet/verify" element={<VerifyCard />} />
             
-            {/* [수정됨] '분석' 탭 라우팅 */}
-            <Route path="spending" element={<SpendingPattern />} /> {/* 2. 이 페이지는 이제 메뉴입니다. */}
-            <Route path="spending/detail" element={<SpendingDetail />} /> {/* 3. 상세 페이지(차트) 라우트 추가 */}
-
+            {/* --- [수정됨] '분석' 탭 라우팅 경로 변경 --- */}
+            <Route path="analysis" element={<Analysis />} />
+            <Route path="analysis/detail" element={<SpendingDetail />} />
             <Route path="performance" element={<CardPerformance />} />
+            {/* --- [수정 완료] --- */}
+
             <Route path="card/:cardId" element={<CardDetail />} />
           </Route>
 

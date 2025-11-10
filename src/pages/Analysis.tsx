@@ -3,18 +3,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PieChart, CreditCard, BarChart2, Plus } from 'lucide-react';
 
+// --- [수정됨] ---
 const analysisMenuItems = [
   {
     title: "소비패턴",
     description: "카테고리별 지출 분석",
     icon: PieChart,
-    link: "/app/spending/detail",
+    link: "/app/analysis/detail", // 1. 'spending/detail' -> 'analysis/detail'
   },
   {
     title: "카드별 이용실적",
     description: "보유 카드 실적 현황",
     icon: CreditCard,
-    link: "/app/performance",
+    link: "/app/performance", // 2. (요청대로) '/app/performance' 경로 유지
   },
   // {
   //   title: "월별 리포트",
@@ -23,8 +24,9 @@ const analysisMenuItems = [
   //   link: "#",
   // },
 ];
+// --- [수정 완료] ---
 
-const SpendingPattern = () => {
+const Analysis = () => {
   const navigate = useNavigate();
 
   return (
@@ -51,7 +53,7 @@ const SpendingPattern = () => {
             </Card>
           ))}
 
-          {/* 3*n 레이아웃을 위한 예비 '추가' 버튼 */}
+          {/* 예비 '추가' 버튼 */}
           <Card className="shadow-none border-2 border-dashed border-muted-foreground/30 bg-transparent flex items-center justify-center h-32 cursor-pointer hover:border-primary">
             <CardContent className="p-4 flex flex-col items-center justify-center text-center">
               <Plus className="w-8 h-8 text-muted-foreground/70" />
@@ -64,4 +66,4 @@ const SpendingPattern = () => {
   );
 };
 
-export default SpendingPattern;
+export default Analysis;

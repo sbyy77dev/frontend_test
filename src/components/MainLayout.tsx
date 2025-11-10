@@ -2,12 +2,13 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { MessageCircle, Wallet, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// 네비게이션 아이템
+// --- [수정됨] ---
 const navItems = [
   { path: 'chat', label: '챗봇', icon: MessageCircle },
   { path: 'wallet', label: '월렛', icon: Wallet },
-  { path: 'spending', label: '분석', icon: LayoutGrid },
+  { path: 'analysis', label: '분석', icon: LayoutGrid }, // 1. path: 'spending' -> 'analysis'
 ];
+// --- [수정 완료] ---
 
 const MainLayout = () => {
   const location = useLocation();
