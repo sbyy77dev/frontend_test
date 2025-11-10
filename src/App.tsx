@@ -21,6 +21,7 @@ import Recommendations from "./pages/Recommendations";
 import CardDetail from "./pages/CardDetail";
 import NotFound from "./pages/NotFound";
 import VerifyCard from "./pages/VerifyCard"; 
+import SpendingPattern from "./pages/SpendingPattern";
 import SpendingDetail from "./pages/SpendingDetail"; // 1. SpendingDetail 페이지 임포트
 
 const queryClient = new QueryClient();
